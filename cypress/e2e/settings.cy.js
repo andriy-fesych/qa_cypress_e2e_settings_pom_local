@@ -6,17 +6,23 @@ import { faker } from '@faker-js/faker';
 /// <reference types="cypress" />
 /// <reference types="../support" />
 
+const settingsPage = new SettingsPage();
+const signInPage = new SignInPage();
+const homePage = new HomePage();
+
 describe('Settings page', () => {
+  let user;
+
   before(() => {
-    cy.task('db:clear');
-    cy.task('generateUser').then((generated) => {
-      user = generated;
-    });
+  cy.task('db:clear');
+  cy.task('generateUser').then((generated) => {
+    user = generated;
+
+    cy.register(user.email, user.username, user.password);
+  });
   });
 
-  beforeEach(() => {
-    cy.register(user.email, user.username, user.password);
-
+  beforeEach(function () {
     signInPage.visit();
     signInPage.typeEmail(user.email);
     signInPage.typePassword(user.password);
@@ -29,6 +35,7 @@ describe('Settings page', () => {
     const newUsername = 'updated_' + user.username;
 
     settingsPage.updateUsername(newUsername);
+    user.username = newUsername;
 
     homePage.assertHeaderContainUsername(newUsername);
   });
@@ -36,9 +43,9 @@ describe('Settings page', () => {
   it('should provide an ability to update bio', () => {
     const newBio = 'Test bio text';
 
-    settingsPage.updateBio(newBio);
+    settingsPage.updateBio(newBio, user.password);
 
-    cy.visit(`/@${user.username}`);
+    cy.visit(`/profile/${user.username}`);
     cy.contains(newBio).should('be.visible');
   });
 
@@ -46,6 +53,7 @@ describe('Settings page', () => {
     const newEmail = 'updated_' + user.email;
 
     settingsPage.updateEmail(newEmail);
+    user.email = newEmail;
 
     cy.contains('Your Settings');
   });
@@ -53,20 +61,34 @@ describe('Settings page', () => {
   it('should provide an ability to update password', () => {
     const newPass = faker.internet.password(12, true);
 
-    settingsPage.updatePassword(newPass);
+    settingsPage.visit();
 
+    settingsPage.passwordInput()
+      .should('not.be.disabled')
+      .clear()
+      .type(newPass);
+
+    settingsPage.submitBtn().click();
+
+    cy.url().should('include', `/profile/${user.username}`);
+
+    user.password = newPass;
+
+    settingsPage.visit();
     settingsPage.logout();
 
     signInPage.visit();
     signInPage.typeEmail(user.email);
-    signInPage.typePassword(newPass);
+    signInPage.typePassword(user.password);
     signInPage.clickSignInBtn();
+
 
     homePage.assertHeaderContainUsername(user.username);
   });
 
   it('should provide an ability to log out', () => {
     settingsPage.logout();
-    signInPage.assertSignInVisible();
+    cy.url().should('eq', Cypress.config().baseUrl + '/');
+    cy.get('a.nav-link[href="/user/login"]').should('be.visible');
   });
 });

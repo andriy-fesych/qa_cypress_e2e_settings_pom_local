@@ -16,7 +16,7 @@ describe('Follow/unfollow button', () => {
     cy.task('generateUser').then((u) => userB = u);
   });
 
-  it.skip('should provide an ability to follow the another user', () => {
+  it('should provide an ability to follow the another user', () => {
     cy.register(userA.email, userA.username, userA.password);
     cy.register(userB.email, userB.username, userB.password);
 

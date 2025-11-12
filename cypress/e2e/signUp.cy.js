@@ -1,9 +1,11 @@
 /// <reference types="cypress" />
 /// <reference types="../support" />
 
+import SettingsPage from '../support/pages/settings.pageObject';
 import SignUpPage from '../support/pages/signUp.pageObject';
 import { faker } from '@faker-js/faker';
 
+const settingsPage = new SettingsPage();
 const signUpPage = new SignUpPage();
 
 describe('Sign Up page', () => {
@@ -12,11 +14,9 @@ describe('Sign Up page', () => {
   beforeEach(() => {
     cy.task('db:clear');
 
-    user = {
-      username: faker.internet.userName().toLowerCase(),
-      email: faker.internet.email().toLowerCase(),
-      password: 'Test12345!'
-    };
+    cy.task('generateUser').then((generated) => {
+      user = generated;
+    });
   });
 
   it('should register a new user successfully', () => {
@@ -37,6 +37,9 @@ describe('Sign Up page', () => {
     signUpPage.typePassword(user.password);
     signUpPage.clickSignUpBtn();
 
+    settingsPage.visit();
+    settingsPage.logout();
+
     const user2 = {
       username: faker.internet.userName().toLowerCase(),
       email: user.email,
@@ -49,7 +52,7 @@ describe('Sign Up page', () => {
     signUpPage.typePassword(user2.password);
     signUpPage.clickSignUpBtn();
 
-    cy.contains('email has already been taken').should('exist');
+    cy.contains('This email is taken.').should('exist');
   });
 
   it('should show error when username already exists', () => {
@@ -71,6 +74,6 @@ describe('Sign Up page', () => {
     signUpPage.typePassword(user2.password);
     signUpPage.clickSignUpBtn();
 
-    cy.contains('username has already been taken').should('exist');
+    cy.contains('This username is taken.').should('exist');
   });
 });

@@ -31,7 +31,7 @@ class SignUpPageObject extends PageObject {
     this.passwordField.type(password);
   }
 
-  clickSignUp() {
+  clickSignUpBtn() {
     this.signUpBtn.click();
   }
 }

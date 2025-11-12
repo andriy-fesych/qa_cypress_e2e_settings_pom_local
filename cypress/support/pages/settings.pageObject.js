@@ -15,8 +15,14 @@ class SettingsPage {
     this.submitBtn().click();
   }
 
-  updateBio(bio) {
+  updateBio(bio, password = null) {
     this.bioInput().clear().type(bio);
+
+    // якщо тест передав пароль — підставляємо його (щоб бекенд не повернув 422)
+    if (password) {
+      this.passwordInput().clear().type(password);
+    }
+
     this.submitBtn().click();
   }
 

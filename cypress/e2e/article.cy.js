@@ -50,8 +50,6 @@ describe('Article', () => {
     articlePage.editArticle(updated);
 
     cy.contains(updated.title).should('exist');
-    /* cy.get('div.article-content > div', { timeout: 10000 })
-      .should('contain', updated.body); */
 
     cy.get('[data-cy=article-body]', { timeout: 10000 })
       .should('contain', updated.body);

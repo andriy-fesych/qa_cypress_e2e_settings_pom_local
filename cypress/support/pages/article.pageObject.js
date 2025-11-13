@@ -20,7 +20,7 @@ class ArticlePage {
 
   editArticle({ title, description, body }) {
     this.editBtn().click();
-    // if(title) this.titleInput().clear().type(title);
+
     cy.get('[data-cy=article-title]').should('be.visible');
 
     if(title) {

@@ -22,7 +22,10 @@ module.exports = defineConfig({
 
           return {
             username: username.toLowerCase(),
-            email: `test_${Math.floor(Math.random() * 100000)}@mail.com`,
+            // email: `test_${Math.floor(Math.random() * 100000)}@mail.com`,
+            email: faker.internet.email({
+              provider: 'mail.com'
+            }).toLowerCase(),
             password,
           };
         },

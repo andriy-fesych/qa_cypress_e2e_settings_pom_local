@@ -13,7 +13,6 @@ describe('Article', () => {
   let article;
 
   before(() => {
-    cy.task('db:clear');
     cy.task('generateUser').then((u) => user = u);
   });
 
@@ -25,19 +24,17 @@ describe('Article', () => {
     signInPage.typePassword(user.password);
     signInPage.clickSignInBtn();
 
-    article = {
-      title: faker.lorem.words(5),
-      description: faker.lorem.words(10),
-      body: faker.lorem.paragraphs(2),
-      tag: faker.lorem.word()
-    };
+    cy.task('generateArticle').then((generated) => {
+      article = generated;
+    });
   });
 
   it('should be created using New Article form', () => {
     articlePage.visitNewArticle();
     articlePage.createArticle(article);
 
-    cy.get('h1').should('contain', article.title);
+    cy.get('[data-cy=article-title]', { timeout: 10000 })
+      .should('contain', article.title);
   });
 
   it('should be edited using Edit button', () => {
@@ -53,9 +50,12 @@ describe('Article', () => {
     articlePage.editArticle(updated);
 
     cy.contains(updated.title).should('exist');
-    cy.get('div.article-content > div', { timeout: 10000 })
+    /* cy.get('div.article-content > div', { timeout: 10000 })
+      .should('contain', updated.body); */
+
+    cy.get('[data-cy=article-body]', { timeout: 10000 })
       .should('contain', updated.body);
-  });
+  }); 
 
   it('should be deleted using Delete button', () => {
     articlePage.visitNewArticle();

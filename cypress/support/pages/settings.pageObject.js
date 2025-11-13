@@ -18,7 +18,6 @@ class SettingsPage {
   updateBio(bio, password = null) {
     this.bioInput().clear().type(bio);
 
-    // якщо тест передав пароль — підставляємо його (щоб бекенд не повернув 422)
     if (password) {
       this.passwordInput().clear().type(password);
     }

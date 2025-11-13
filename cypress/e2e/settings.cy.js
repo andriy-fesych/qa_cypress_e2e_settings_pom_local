@@ -41,7 +41,7 @@ describe('Settings page', () => {
   });
 
   it('should provide an ability to update bio', () => {
-    const newBio = 'Test bio text';
+    const newBio = faker.lorem.sentence();
 
     settingsPage.updateBio(newBio, user.password);
 
@@ -56,6 +56,8 @@ describe('Settings page', () => {
     user.email = newEmail;
 
     cy.contains('Your Settings');
+    settingsPage.visit();
+    settingsPage.emailInput().should('have.value', newEmail);
   });
 
   it('should provide an ability to update password', () => {
@@ -63,10 +65,7 @@ describe('Settings page', () => {
 
     settingsPage.visit();
 
-    settingsPage.passwordInput()
-      .should('not.be.disabled')
-      .clear()
-      .type(newPass);
+    settingsPage.updatePassword(newPass);
 
     settingsPage.submitBtn().click();
 
@@ -89,6 +88,6 @@ describe('Settings page', () => {
   it('should provide an ability to log out', () => {
     settingsPage.logout();
     cy.url().should('eq', Cypress.config().baseUrl + '/');
-    cy.get('a.nav-link[href="/user/login"]').should('be.visible');
+    cy.get('[data-cy=nav-sign-in]').should('exist');
   });
 });

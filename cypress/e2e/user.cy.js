@@ -2,8 +2,10 @@
 /// <reference types="../support" />
 
 import SignInPage from '../support/pages/signIn.pageObject';
+import ProfilePage from '../support/pages/profile.pageObject';
 
 const signInPage = new SignInPage();
+const profilePage = new ProfilePage();
 
 describe('Follow/unfollow button', () => {
   let userA;
@@ -25,16 +27,12 @@ describe('Follow/unfollow button', () => {
     signInPage.typePassword(userA.password);
     signInPage.clickSignInBtn();
 
-    cy.visit(`/profile/${userB.username}`);
+    profilePage.visit(userB.username);
 
-    cy.getByDataCy('follow-btn').click();
+    profilePage.clickFollowBtn();
+    profilePage.verifyFollowBtnText('Unfollow');
 
-    cy.getByDataCy('follow-btn')
-      .should('contain', 'Unfollow');
-
-    cy.getByDataCy('follow-btn').click();
-
-    cy.getByDataCy('follow-btn')
-      .should('contain', 'Follow');
+    profilePage.clickFollowBtn();
+    profilePage.verifyFollowBtnText('Follow');
   });
 });

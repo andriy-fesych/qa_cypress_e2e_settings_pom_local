@@ -43,11 +43,10 @@ const ArticleActions = ({ article }) => {
       <Maybe test={canModify}>
         <span>
           <CustomLink
-            data-cy="article-edit"
             href={routes.articleEdit(article.slug)}
             className="btn btn-outline-secondary btn-sm"
           >
-            <i className="ion-edit" /> Edit Article
+            <i className="ion-edit" data-cy="article-edit" /> Edit Article
           </CustomLink>
           <button
             data-cy="article-delete"

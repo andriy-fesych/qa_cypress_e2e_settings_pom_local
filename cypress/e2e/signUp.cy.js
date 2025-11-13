@@ -3,7 +3,6 @@
 
 import SettingsPage from '../support/pages/settings.pageObject';
 import SignUpPage from '../support/pages/signUp.pageObject';
-import { faker } from '@faker-js/faker';
 
 const settingsPage = new SettingsPage();
 const signUpPage = new SignUpPage();
@@ -40,19 +39,21 @@ describe('Sign Up page', () => {
     settingsPage.visit();
     settingsPage.logout();
 
-    const user2 = {
-      username: faker.internet.userName().toLowerCase(),
-      email: user.email,
-      password: 'Test12345!'
-    };
+    cy.task('generateUser').then((generatedUser) => {
+      const user2 = {
+        username: generatedUser.username,
+        email: user.email,
+        password: generatedUser.password
+      };
 
-    signUpPage.visit();
-    signUpPage.typeUsername(user2.username);
-    signUpPage.typeEmail(user2.email);
-    signUpPage.typePassword(user2.password);
-    signUpPage.clickSignUpBtn();
+      signUpPage.visit();
+      signUpPage.typeUsername(user2.username);
+      signUpPage.typeEmail(user2.email);
+      signUpPage.typePassword(user2.password);
+      signUpPage.clickSignUpBtn();
 
-    cy.contains('This email is taken.').should('exist');
+      cy.contains('This email is taken.').should('exist');
+    });
   });
 
   it('should show error when username already exists', () => {
@@ -62,18 +63,23 @@ describe('Sign Up page', () => {
     signUpPage.typePassword(user.password);
     signUpPage.clickSignUpBtn();
 
-    const user2 = {
-      username: user.username,
-      email: faker.internet.email().toLowerCase(),
-      password: 'Test12345!'
-    };
+    settingsPage.visit();
+    settingsPage.logout();
 
-    signUpPage.visit();
-    signUpPage.typeUsername(user2.username);
-    signUpPage.typeEmail(user2.email);
-    signUpPage.typePassword(user2.password);
-    signUpPage.clickSignUpBtn();
+    cy.task('generateUser').then((generatedUser) => {
+      const user2 = {
+        username: user.username,
+        email: generatedUser.email,
+        password: generatedUser.password
+      };
 
-    cy.contains('This username is taken.').should('exist');
+      signUpPage.visit();
+      signUpPage.typeUsername(user2.username);
+      signUpPage.typeEmail(user2.email);
+      signUpPage.typePassword(user2.password);
+      signUpPage.clickSignUpBtn();
+
+      cy.contains('This username is taken.').should('exist');
+    });
   });
 });
